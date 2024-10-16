@@ -1,0 +1,5 @@
+selenium~=4.25.0
+beautifulsoup4~=4.13.0b2
+gTTS~=2.5.3
+pydub~=0.25.1
+lingua-language-detector~=2.0.2
