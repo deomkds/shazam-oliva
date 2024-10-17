@@ -18,7 +18,7 @@ Não que eu saiba, mas o script foi testado apenas na versão mais recente do Ma
 1. [Selenium](https://www.selenium.dev/)
    1. Necessita instalação de um driver. Por padrão, o script usa o driver `GECKO`.
 2. [Lingua](https://pypi.org/project/lingua-language-detector/)
-   2. O pacote correto no PyPI é o `lingua-language-detector`.
+   1. O pacote correto no PyPI é o `lingua-language-detector`.
 3. [BeautifulSoup4](https://pypi.org/project/beautifulsoup4/)
 4. [gTTS](https://pypi.org/project/gTTS/)
 5. [pydub](https://pypi.org/project/pydub/)
