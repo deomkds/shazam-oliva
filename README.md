@@ -4,6 +4,11 @@ Shazam-Oliva é um script que retorna o nome da música que está sendo tocada n
 
 Ao receber a informação, o script anuncia, em voz alta, o nome da música e do intérprete. Também envia uma notificação para a área de trabalho (notify-send) e para todos os dispositivos pareados no [KDE Connect](https://kdeconnect.kde.org/).
 
+### Observações
+
+1. Caso queira consultar outra estação, altere a URL dentro do script mudando a variável `RADIO_URL`.
+2. O script possui várias opções de personalização logo no topo que podem ser alteradas para uma melhor experiência.
+
 ### Bugs
 
 Não que eu saiba, mas o script foi testado apenas na versão mais recente do Manjaro com KDE.
