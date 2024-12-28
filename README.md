@@ -2,7 +2,7 @@
 
 Shazam-Oliva é um script que retorna o nome da música que está sendo tocada neste momento na [Rádio Verde Oliva](https://www.eb.mil.br/web/central-de-conteudos/radio-verde-oliva).
 
-Ao receber a informação, o script anuncia, em voz alta, o nome da música e do intérprete. Também envia uma notificação para a área de trabalho (notify-send) e para todos os dispositivos pareados no [KDE Connect](https://kdeconnect.kde.org/).
+Ao receber a informação, o script anuncia, em voz alta, o nome da música e do intérprete. Também envia uma notificação para a área de trabalho (kdialog) e para todos os dispositivos pareados no [KDE Connect](https://kdeconnect.kde.org/).
 
 ### Observações
 
