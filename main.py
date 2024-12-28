@@ -1,8 +1,9 @@
 import io
+import os.path
 import time
 import subprocess
 from datetime import datetime
-
+from pathlib import Path
 import alsaaudio
 from selenium import webdriver
 from selenium.webdriver.firefox.service import Service
@@ -12,11 +13,15 @@ from gtts import gTTS
 from lingua import Language, LanguageDetectorBuilder
 from pydub import AudioSegment
 from pydub.playback import play
+from PIL import Image
+import requests
+from io import BytesIO
+
 
 # Configurações do Selenium.
 GECKO_DRIVER_PATH = "/usr/bin/geckodriver"                         # Caminho do driver no computador.
 RADIO_URL = "https://socialradio.com.br/radio/verdeolivaresende/"  # URL da estação.
-LOAD_TIME = 2                                                      # Tempo de carregamento da página, em segundos.
+LOAD_TIME = 4                                                      # Tempo de carregamento da página, em segundos.
                                                                    # Use números maiores em conexões mais lentas.
 
 # Configurações de voz.
@@ -55,6 +60,18 @@ def extract_tag_content(html_content, tag_name, tag_id):
         return tag.get_text()
     else:
         return None
+
+
+def extract_album_art(html_content):
+    soup = BeautifulSoup(html_content, 'html.parser')
+    art_style = soup.find("div", id="lunaradiocoverwrapper2")
+
+    try:
+        art_url = art_style.get("style").split("\"")[1]
+    except:
+        return None
+
+    return art_url
 
 
 def assemble_time():
@@ -125,11 +142,23 @@ def detect_language(text):
     return name, code
 
 
-def notify_devices(device_ids, message):
+def notify_devices(device_ids, message, art_url):
     if NOTIFY_DESKTOP:
+        home_dir = Path.home()
+        path = os.path.join(home_dir, "temp_art.png")
+
+        try:
+            response = requests.get(art_url)
+            art_file = Image.open(BytesIO(response.content)) #.resize((128, 128))
+            art_file.save(path, "PNG")
+        except:
+            pass
+
         subprocess.run(
-            ["notify-send", "-u", "normal", "-t", "7000",
-             "Tocando na Verde Oliva", message],
+            ["kdialog",
+                  "--passivepopup", message, "5",
+                  "--icon", path,
+                  "--title", "Tocando na Verde Oliva"],
             check=True)
 
     if NOTIFY_KDE_CONNECT:
@@ -147,13 +176,13 @@ def main():
         content = fetch_webpage(driver, RADIO_URL)
         if content:
             tag_content = extract_tag_content(content, "div", "lunaradiotexttitle").title()
-            print(tag_content)
+            album_art = extract_album_art(content)
 
             if "�" in tag_content:  # For when the web player shows garbage data.
                 tag_content = "Verde Oliva - Resende"
 
             language = detect_language(tag_content)
-            notify_devices(kde_connect_devices, f"Song: {tag_content}\nLanguage: {language[0]} ({language[1]})")
+            notify_devices(kde_connect_devices, f"Song: {tag_content}\nLanguage: {language[0]} ({language[1]})", album_art)
             read_aloud(tag_content, language[1])
 
         else:

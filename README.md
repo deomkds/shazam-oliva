@@ -22,6 +22,8 @@ Não que eu saiba, mas o script foi testado apenas na versão mais recente do Ma
 3. [BeautifulSoup4](https://pypi.org/project/beautifulsoup4/)
 4. [gTTS](https://pypi.org/project/gTTS/)
 5. [pydub](https://pypi.org/project/pydub/)
+6. [Pillow](https://pypi.org/project/pillow/)
+7. [requests](https://pypi.org/project/requests/)
 
 Também pode tentar:
 
