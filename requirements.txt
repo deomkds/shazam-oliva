@@ -3,3 +3,5 @@ beautifulsoup4~=4.13.0b2
 gTTS~=2.5.3
 pydub~=0.25.1
 lingua-language-detector~=2.0.2
+pillow~=11.0.0
+requests~=2.32.3

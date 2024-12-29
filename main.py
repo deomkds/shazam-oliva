@@ -34,6 +34,9 @@ NOTIFY_DESKTOP = True                       # Ativa ou desativa a notificação 
 NOTIFY_KDE_CONNECT = True                   # Ativa ou desativa a notificação dos dispositivos no KDE Connect.
 kde_connect_devices = ["61c24666ecf34a46"]  # Lista de device-ids dos dispositivos conectados ao KDE Connect.
 
+home_dir = Path.home()
+art_path = os.path.join(home_dir, "temp_art.png")
+log_path = os.path.join(home_dir, "oliva_log.txt")
 
 def create_webdriver():
     firefox_options = Options()
@@ -85,21 +88,27 @@ def assemble_time():
         hour = "duas"
 
     if minute == 0:
-        time = f"{hour} em ponto"
+        moment = f"{hour} em ponto"
     elif minute == 30:
-        time = f"{hour} e meia"
+        moment = f"{hour} e meia"
     else:
-        time = f"{hour} e {minute}"
+        moment = f"{hour} e {minute}"
 
     if hour_24 == 0:
-        time = "meia noite"
+        moment = "meia noite"
     elif hour_24 == 12:
-        time = "meio dia"
+        moment = "meio dia"
 
-    return time
+    return moment
+
+
+def log(info):
+    with open(log_path, "a") as log_file:
+        log_file.write(f"{datetime.now()}: {info}\n")
 
 
 def read_aloud(song_info, language):
+    log(song_info)
     if not READ_ALOUD:
         return None
 
@@ -144,20 +153,17 @@ def detect_language(text):
 
 def notify_devices(device_ids, message, art_url):
     if NOTIFY_DESKTOP:
-        home_dir = Path.home()
-        path = os.path.join(home_dir, "temp_art.png")
-
         try:
             response = requests.get(art_url)
             art_file = Image.open(BytesIO(response.content)) #.resize((128, 128))
-            art_file.save(path, "PNG")
+            art_file.save(art_path, "PNG")
         except:
             pass
 
         subprocess.run(
             ["kdialog",
                   "--passivepopup", message, "5",
-                  "--icon", path,
+                  "--icon", art_path,
                   "--title", "Tocando na Verde Oliva"],
             check=True)
 
