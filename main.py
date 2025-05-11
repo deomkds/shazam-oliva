@@ -32,7 +32,6 @@ SPEAK_HU3BR = False  # Ativa ou desativa o anúncio de nomes estrangeiros em por
 # Configurações de notificação.
 NOTIFY_DESKTOP = True                       # Ativa ou desativa a notificação da área de trabalho.
 NOTIFY_KDE_CONNECT = True                   # Ativa ou desativa a notificação dos dispositivos no KDE Connect.
-kde_connect_devices = ["61c24666ecf34a46"]  # Lista de device-ids dos dispositivos conectados ao KDE Connect.
 
 home_dir = Path.home()
 art_path = os.path.join(home_dir, "temp_art.png")
@@ -151,6 +150,18 @@ def detect_language(text):
     return name, code
 
 
+def get_connected_devices():
+    results = subprocess.run(
+        ["kdeconnect-cli", "--list-devices", "--id-only"],
+        capture_output=True,
+        text=True
+    ).stdout.strip().split("\n")
+
+    ids = [result for result in results if result[0] != "_"]
+
+    return ids
+
+
 def notify_devices(device_ids, message, art_url):
     if NOTIFY_DESKTOP:
         try:
@@ -188,6 +199,7 @@ def main():
                 tag_content = "Verde Oliva - Resende"
 
             language = detect_language(tag_content)
+            kde_connect_devices = get_connected_devices()
             notify_devices(kde_connect_devices, f"Song: {tag_content}\nLanguage: {language[0]} ({language[1]})", album_art)
             read_aloud(tag_content, language[1])
 
