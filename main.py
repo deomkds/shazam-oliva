@@ -32,10 +32,12 @@ SPEAK_HU3BR = False  # Ativa ou desativa o anúncio de nomes estrangeiros em por
 # Configurações de notificação.
 NOTIFY_DESKTOP = True                       # Ativa ou desativa a notificação da área de trabalho.
 NOTIFY_KDE_CONNECT = True                   # Ativa ou desativa a notificação dos dispositivos no KDE Connect.
+FETCH_LYRICS = False                        # Baixa e exibe a letra da música atual.
 
 home_dir = Path.home()
 art_path = os.path.join(home_dir, "temp_art.png")
 log_path = os.path.join(home_dir, "oliva_log.txt")
+
 
 def create_webdriver():
     firefox_options = Options()
@@ -162,7 +164,28 @@ def get_connected_devices():
     return ids
 
 
-def notify_devices(device_ids, message, art_url):
+def get_lyrics(artist, title):
+    url = f"https://api.lyrics.ovh/v1/{artist}/{title}"
+    response = requests.get(url)
+
+    if response.status_code == 200:
+        lyrics = response.json().get("lyrics")
+    else:
+        lyrics = "Lyrics not found."
+
+    return lyrics
+
+
+def notify_devices(song_info, art_url, language):
+    if FETCH_LYRICS:
+        artist = song_info.split(" - ")[0]
+        song = song_info.split(" - ")[1]
+        lyrics = f"\nLyrics: {get_lyrics(artist, song)}"
+    else:
+        lyrics = ""
+
+    message = f"Song: {song_info}\nLanguage: {language[0]} ({language[1]}){lyrics}"
+
     if NOTIFY_DESKTOP:
         try:
             response = requests.get(art_url)
@@ -180,6 +203,7 @@ def notify_devices(device_ids, message, art_url):
 
     if NOTIFY_KDE_CONNECT:
         try:
+            device_ids = get_connected_devices()
             for device_id in device_ids:
                 command = f"kdeconnect-cli --device {device_id} --ping-msg \"{message}\""
                 subprocess.run(command, shell=True, check=True)
@@ -199,8 +223,7 @@ def main():
                 tag_content = "Verde Oliva - Resende"
 
             language = detect_language(tag_content)
-            kde_connect_devices = get_connected_devices()
-            notify_devices(kde_connect_devices, f"Song: {tag_content}\nLanguage: {language[0]} ({language[1]})", album_art)
+            notify_devices(tag_content, album_art, language)
             read_aloud(tag_content, language[1])
 
         else:
